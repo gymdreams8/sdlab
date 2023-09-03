@@ -46,13 +46,17 @@ class Text2Image:
 
     def __init__(
             self,
-            model_path=None,
-            prompt=None,
-            guidance_scale=5,
-            steps=20,
-            outputs_path=None,
+            model_path: str = None,
+            prompt: str = None,
+            use_cuda: bool = False,
+            guidance_scale: int = 5,
+            steps: int = 20,
+            outputs_path: str = None,
     ):
         self.model_path = os.path.expanduser(model_path)
+
+        # You can enable cuda if you need to
+        self.use_cuda = use_cuda
 
         if not prompt:
             prompt = self.default_prompt
@@ -111,6 +115,9 @@ class Text2Image:
             scheduler=SchedulerLibrary.get_euler_a(),
         )
 
+        if self.use_cuda:
+            pipe.to('cuda')
+
         image = pipe(
             self.prompt,
             guidance_scale=self.guidance_scale,
@@ -128,7 +135,8 @@ def main():
     txt2img = Text2Image(
         model_path='~/_StableDiffusion_Models/Stable-diffusion/airfucksBruteMix_v10.safetensors',
         outputs_path='~/Dropbox/StableDiffusion/outputs_code',
-        prompt='man'
+        prompt='man',
+        use_cuda=False,
     )
     txt2img.run()
 
